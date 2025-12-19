@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1054085078088",
+    "project_id": "coin-watcher-c76e3",
+    "storage_bucket": "coin-watcher-c76e3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054085078088:android:fbf0b8f8ab2822b51c8c7d",
+        "android_client_info": {
+          "package_name": "com.example.coin_watcher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054085078088-6o4fea8hpacp9clq6qtu3hi4hpj7st3k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSLbU1hjzQ_7RA2IKuxDwNymK4wJeYf6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054085078088-6o4fea8hpacp9clq6qtu3hi4hpj7st3k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1054085078088-arc92sgv1v8164h1re9kujufb9e3v1sb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.coinWatcher"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
