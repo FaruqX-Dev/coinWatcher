@@ -20,7 +20,7 @@ CoinWatcher is a clean, lightning-fast cryptocurrency tracker built to help inve
 - **State Management**: Riverpod (for reactive UI and predictable state)
 - **Backend**: Firebase (Auth & Firestore)
 - **API**: [CoinGecko API](https://www.coingecko.com/en/api)
-//- **Notifications**: Firebase Cloud Messaging (FCM)
+//- **Notifications**: Flutter_Local_Notification(pub.dev)
 
 
 
