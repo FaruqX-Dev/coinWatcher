@@ -186,33 +186,31 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   GestureDetector(
                     onTap: () async {
                       try {
-                        final user = await authController.signUp(
+                        await authController.signUp(
                           emailController.text.trim(),
                           passwordController.text.trim(),
                         );
-          
-                        if (user != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Registered Successfully'),
-                            ),
-          
-                          );
-          
-                          emailController.clear();
-                          passwordController.clear();
-                        }
-          
-                      } on FirebaseAuthException catch (e) {
+
+                        if (!context.mounted) return;
+
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.message ?? 'Sign up failed')),
+                          const SnackBar(
+                              content: Text('Logged in Successfully')),
                         );
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const CoinScreenList()),
+                        );
+
+                        emailController.clear();
+                        passwordController.clear();
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Unexpected error: $e')),
+                          SnackBar(content: Text('Sign in failed: $e')),
                         );
                       }
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CoinScreenList()));
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

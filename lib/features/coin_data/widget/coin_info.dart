@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:coin_watcher/features/coin_data/model/coin_model.dart';
+import 'package:coin_watcher/features/notifications/services/local_notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/provider/auth_provider.dart';
@@ -69,6 +73,48 @@ class CoinDetailsContainer extends ConsumerWidget {
                         await ref
                             .read(favoriteServiceProvider)
                             .toggleFavorite(userId, coin);
+                        if (!isFavorite) { // Only schedule if adding to watchlist
+                          final notificationService = LocalNotificationService();
+                          await notificationService.requestPermissionIfNeeded();
+                          final change = coin.priceChangePercentage24h;
+                          final direction = change >= 0 ? 'increased' : 'decreased';
+                          final now = DateTime.now();
+                          final random = Random();
+
+                          // Schedule morning notification (random between 8 AM and 12 PM)
+                          int morningHour = 8 + random.nextInt(4); // 8 to 11
+                          int morningMinute = random.nextInt(60);
+                          DateTime morningTime = DateTime(now.year, now.month, now.day, morningHour, morningMinute);
+                          if (morningTime.isBefore(now) || morningTime.isAtSameMomentAs(now)) {
+                            morningTime = morningTime.add(const Duration(days: 1));
+                          }
+                          await notificationService.scheduleNotification(
+                            id: coin.id.hashCode, // Unique ID for morning
+                            title: '${coin.name} Update',
+                            body: '${coin.name} has $direction by ${change.abs().toStringAsFixed(2)}% in the last 24 hours. Current price: \$${coin.currentPrice}',
+                            scheduledDate: morningTime,
+                            matchDateTimeComponents: DateTimeComponents.time,
+                          );
+
+                          // Schedule evening notification (random between 6 PM and 10 PM)
+                          int eveningHour = 18 + random.nextInt(4); // 18 to 21
+                          int eveningMinute = random.nextInt(60);
+                          DateTime eveningTime = DateTime(now.year, now.month, now.day, eveningHour, eveningMinute);
+                          if (eveningTime.isBefore(now) || eveningTime.isAtSameMomentAs(now)) {
+                            eveningTime = eveningTime.add(const Duration(days: 1));
+                          }
+                          await notificationService.scheduleNotification(
+                            id: coin.id.hashCode + 1, // Unique ID for evening
+                            title: '${coin.name} Update',
+                            body: '${coin.name} has $direction by ${change.abs().toStringAsFixed(2)}% in the last 24 hours. Current price: \$${coin.currentPrice}',
+                            scheduledDate: eveningTime,
+                            matchDateTimeComponents: DateTimeComponents.time,
+                          );
+                        } else { // Cancel notifications if removing from watchlist
+                          final notificationService = LocalNotificationService();
+                          await notificationService.cancelNotification(coin.id.hashCode);
+                          await notificationService.cancelNotification(coin.id.hashCode + 1);
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

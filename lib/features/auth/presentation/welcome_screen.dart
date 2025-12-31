@@ -58,13 +58,11 @@ class WelcomeScreen extends StatelessWidget {
                     fontSize: 30,
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Track prices,manage assets, and get real-time alerts for hundreds of cryptocurrecies.',
                     textAlign: TextAlign.center,
-
                     style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                 ),
@@ -123,11 +121,28 @@ class WelcomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-SizedBox(height: ScreenSize.height(context)*.05,),
-                GestureDetector(
+                SizedBox(
+                  height: ScreenSize.height(context) * .05,
+                ),
+                InkWell(
+                  enableFeedback: true,
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => SignupScreen()),
+                      PageRouteBuilder(
+                        transitionDuration: const Duration(milliseconds: 300),
+                        pageBuilder: (_, __, ___) => const SignupScreen(),
+                        transitionsBuilder: (_, animation, __, child) {
+                          final tween = Tween<Offset>(
+                            begin: const Offset(1.0, 0.0), 
+                            end: Offset.zero,
+                          ).chain(CurveTween(curve: Curves.easeInOut));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      ),
                     );
                   },
                   child: Padding(
@@ -162,8 +177,10 @@ SizedBox(height: ScreenSize.height(context)*.05,),
                       'Already have an account? ',
                       style: TextStyle(color: Colors.grey),
                     ),
-                    SizedBox(height: 20,),
-                    GestureDetector(
+                    SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
                       onTap: () {
                         Navigator.push(
                           context,

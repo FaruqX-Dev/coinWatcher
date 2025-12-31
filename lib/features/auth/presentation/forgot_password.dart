@@ -1,17 +1,20 @@
+import 'package:coin_watcher/features/auth/controllers/auth_controller.dart';
+import 'package:coin_watcher/features/auth/provider/auth_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/themes/theme.dart';
 import '../../../core/utils/screensize.dart';
-import '../provider/auth_provider.dart';
 
 class ForgotPassword extends ConsumerWidget {
-  const ForgotPassword({super.key});
+  ForgotPassword({super.key});
+
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authController = ref.watch(authcontrollerProvider);
-    final TextEditingController emailController = TextEditingController();
+    final _authController = ref.watch(authcontrollerProvider);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -73,7 +76,6 @@ class ForgotPassword extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.yellow),
                   ),
-
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.white),
@@ -87,9 +89,12 @@ class ForgotPassword extends ConsumerWidget {
               ),
             ),
             Spacer(),
-            GestureDetector(
+            InkWell(
+              enableFeedback: true,
               onTap: () async {
-                authController.resetPassword(emailController.text.trim());
+                await _authController.resetPassword(
+                  emailController.text.trim(),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -124,7 +129,7 @@ class ForgotPassword extends ConsumerWidget {
                   Text('Remember your password?'),
                   SizedBox(width: 5),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       Navigator.pop(context);
                     },
                     child: Text(

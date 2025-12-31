@@ -51,7 +51,6 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                   SizedBox(height: ScreenSize.height(context) * .02),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -89,7 +88,6 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.yellow),
                       ),
-
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.white),
@@ -121,7 +119,6 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.yellow),
                       ),
-
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.white),
@@ -147,9 +144,13 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      GestureDetector(
+                      InkWell(
+                        enableFeedback: true,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPassword()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPassword()));
                         },
                         child: Text(
                           'Forgot password?',
@@ -158,29 +159,35 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
-                  GestureDetector(
+                  InkWell(
+                    enableFeedback: true,
                     onTap: () async {
                       try {
                         await authController.signIn(
                           emailController.text.trim(),
                           passwordController.text.trim(),
                         );
+
+                        if (!context.mounted) return;
+
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Logged in Successfully')),
+                          const SnackBar(
+                              content: Text('Logged in Successfully')),
                         );
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const CoinScreenList()),
+                        );
+
                         emailController.clear();
                         passwordController.clear();
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Sign in failed : $e')),
+                          SnackBar(content: Text('Sign in failed: $e')),
                         );
                       }
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CoinScreenList(),
-                        ),
-                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -224,7 +231,8 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  GestureDetector(
+                  InkWell(
+                    enableFeedback: true,
                     onTap: () {},
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -265,7 +273,8 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                         'Dont have an account? ',
                         style: TextStyle(color: Colors.grey),
                       ),
-                      GestureDetector(
+                      InkWell(
+                        enableFeedback: true,
                         onTap: () {
                           Navigator.push(
                             context,

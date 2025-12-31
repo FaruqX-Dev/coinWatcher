@@ -35,7 +35,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 trailing: Switch(
                   value: isDarkModeOn,
-                  activeColor: AppTheme.buttonColors,
+                  activeThumbColor: AppTheme.buttonColors,
                   onChanged: (value) {
                     ref.watch(themeModeToggleProvider.notifier).state =
                     toggleTheme == darkMode ? lightMode : darkMode;
