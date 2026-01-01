@@ -23,4 +23,8 @@ class AuthController {
     return _authService.resetPassword(email);
   }
 
+Future<User?> signInAsGuest()async{
+  return _authService.signInAsGuest();
+}
+
 }

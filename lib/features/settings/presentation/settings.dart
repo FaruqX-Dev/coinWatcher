@@ -10,7 +10,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkModeOn=ref.watch(isThemeDarkModeProvider);
-    final toggleTheme = ref.watch(themeModeToggleProvider);
+    final themeNotifier = ref.read(themeNotifierProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
@@ -37,26 +37,20 @@ class SettingsScreen extends ConsumerWidget {
                   value: isDarkModeOn,
                   activeThumbColor: AppTheme.buttonColors,
                   onChanged: (value) {
-                    ref.watch(themeModeToggleProvider.notifier).state =
-                    toggleTheme == darkMode ? lightMode : darkMode;
-                    ref.watch(isThemeDarkModeProvider.notifier).state =
-                    !isDarkModeOn;
+                    themeNotifier.toggleTheme();
                   },
                 ),
               ),
               ListTile(
-                title: Text('Enable Notifications',style: TextStyle(
-                  fontSize: 18,
-                ),),
-                //trailing: Switch(value: value, onChanged: onChanged),
-              ),
-              ListTile(
                 title: Text('Share'),
                 trailing: Icon(Icons.arrow_forward_ios),
+                
               ),
               ListTile(
                 title: Text('Rate Us'),
                 trailing: Icon(Icons.arrow_forward_ios),
+        
+                
               ),
 
             ],

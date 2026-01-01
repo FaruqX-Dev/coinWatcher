@@ -42,4 +42,10 @@ class AuthService {
   Future<void> resetPassword(String email)async{
     await _auth.sendPasswordResetEmail(email: email);
   }
+
+  //Sign in as guest
+  Future<User?> signInAsGuest() async {
+    final cred = await _auth.signInAnonymously();
+    return cred.user;
+  }
 }

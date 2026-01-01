@@ -1,9 +1,9 @@
 import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/utils/screensize.dart';
+import 'package:coin_watcher/core/widget/mydrawer.dart';
 import 'package:coin_watcher/features/auth/presentation/loginscreen.dart';
 import 'package:coin_watcher/features/auth/provider/auth_provider.dart';
 import 'package:coin_watcher/features/coin_data/presentation/coin_screen_list.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,14 +22,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _hidetext = true;
   bool _terms = false;
   String _password = '';
+
   @override
   Widget build(BuildContext context) {
     final authController = ref.watch(authcontrollerProvider);
+    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
+
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: AppTheme.appBackgroundColor,
-        body:SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(top: ScreenSize.height(context) * .05),
             child: Padding(
@@ -39,20 +42,22 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 43, 99, 48),
-                          borderRadius: BorderRadius.circular(150),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset('assets/images/cwatch_logo.png'),
-                        ),
-                      ),
+                      ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(30),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color.fromARGB(255, 43, 99, 48),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, top: 8, right: 11, bottom: 8),
+                                child: Image.asset(
+                                    'assets/images/cwatch_logo.png'),
+                              ))),
                     ],
                   ),
                   SizedBox(height: ScreenSize.height(context) * .02),
-          
                   Row(
                     children: [
                       Text(
@@ -71,14 +76,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     children: [
                       Text(
                         'Email',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: TextStyle(
+                            color: isDarkModeOn ? Colors.white : Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   SizedBox(height: 10),
                   TextField(
                     controller: emailController,
-          
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       enabled: true,
@@ -86,7 +93,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.yellow),
                       ),
-          
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.white),
@@ -104,7 +110,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     children: [
                       Text(
                         'Password',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: TextStyle(
+                            color: isDarkModeOn ? Colors.white : Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -123,7 +132,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.yellow),
                       ),
-          
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.white),
@@ -157,6 +165,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Checkbox(
+                              hoverColor: Colors.white,
+                              side: const BorderSide(
+                                color: Colors.green,
+                                width: 2.0,
+                              ),
+                              checkColor: Colors.black,
                               value: _terms,
                               onChanged: (bool? checked) {
                                 setState(() {
@@ -164,25 +178,40 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                 });
                               },
                             ),
-                            Text('I agree to ', style: TextStyle(fontSize: 14)),
-                            GestureDetector(
-                              onTap: () {},
+                            Text('I agree to ',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: isDarkModeOn
+                                        ? Colors.white
+                                        : Colors.white)),
+                            InkWell(
+                              enableFeedback: true,
+                              onTap: () => showTermsAndConditions(context),
                               child: Text(
                                 'Terms & conditions',
                                 style: TextStyle(color: AppTheme.buttonColors),
                               ),
                             ),
-                            Text(' and ', style: TextStyle(fontSize: 14)),
-                            Text(
-                              'Privacy Policy.',
-                              style: TextStyle(color: AppTheme.buttonColors),
+                            Text(' and ',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: isDarkModeOn
+                                        ? Colors.white
+                                        : Colors.white)),
+                            InkWell(
+                              enableFeedback: true,
+                              onTap: () => showPrivacyPolicy(context),
+                              child: Text(
+                                'Privacy Policy.',
+                                style: TextStyle(color: AppTheme.buttonColors),
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: ScreenSize.height(context)*.28),
+                  SizedBox(height: ScreenSize.height(context) * .28),
                   GestureDetector(
                     onTap: () async {
                       try {
@@ -270,4 +299,35 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       ),
     );
   }
+}
+
+void showTermsAndConditions(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Terms & Conditions'),
+      content: const Text(
+        'By using this app, you agree to our terms and conditions.',
+      ),
+      // actions: [
+      //   InkWell(
+      //     onTap: () => Navigator.pop(context),
+      //     child: Container(decoration: BoxDecoration(
+      //       color: Colors.red,
+      //       borderRadius: BorderRadius.circular(12)
+      //     ),child: Padding(
+      //       padding: const EdgeInsets.all(8.0),
+      //       child: const Text('Decline',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+      //     )),
+      //   ),
+      //   InkWell(
+      //     onTap: () => Navigator.pop(context),
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(8.0),
+      //       child: const Text('Accept',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold)),
+      //     ),
+      //   ),
+      // ],
+    ),
+  );
 }

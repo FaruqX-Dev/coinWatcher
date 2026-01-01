@@ -21,7 +21,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Coin Watcher',
-      theme: ref.watch(themeModeToggleProvider),
+      theme: ref.watch(themeNotifierProvider),
       home: AuthGate(),
     );
   }

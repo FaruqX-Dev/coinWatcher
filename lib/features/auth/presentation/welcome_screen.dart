@@ -3,12 +3,13 @@ import 'package:coin_watcher/core/utils/screensize.dart';
 import 'package:coin_watcher/features/auth/presentation/loginscreen.dart';
 import 'package:coin_watcher/features/auth/presentation/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppTheme.appBackgroundColor,
@@ -169,6 +170,8 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
+               
                 SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

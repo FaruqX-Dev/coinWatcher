@@ -2,6 +2,7 @@ import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/utils/screensize.dart';
 import 'package:coin_watcher/features/settings/presentation/settings.dart';
 import 'package:coin_watcher/features/watchlist/presentation/watchlist_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,7 +15,7 @@ class MyDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkModeOn=ref.watch(isThemeDarkModeProvider);
+    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
     return Drawer(
       child: Column(
         children: [
@@ -25,29 +26,45 @@ class MyDrawer extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: [Image.asset('assets/images/panda.png', scale: 5)],
+                  children: [Image.asset('assets/images/panda.png', scale: 7)],
                 ),
                 SizedBox(height: 15),
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: Text(
-                    '${ref.watch(currentUserProvider)?.email}',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                Text(
+                  'User: ${ref.watch(currentUserProvider)?.email}',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: isDarkModeOn ? Colors.white : Colors.black),
+                ),
+                Row(
+                  spacing: 5,
+                  children: [
+                    Text(
+                        'e-mail Verified: ${ref.watch(currentUserProvider)?.emailVerified}'),
+                    if (ref.watch(currentUserProvider)?.emailVerified == true)
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      )
+                    else
+                      Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      )
+                  ],
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: .2,
+                      width: ScreenSize.width(context) * .7,
+                      color: Colors.grey.shade700,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
-          SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: .1,
-                width: ScreenSize.width(context) * .7,
-                color: Colors.grey,
-              ),
-            ],
           ),
           SizedBox(
             height: ScreenSize.height(context) * .35,
@@ -60,7 +77,8 @@ class MyDrawer extends ConsumerWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
+                    child: InkWell(
+                      enableFeedback: true,
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
@@ -78,7 +96,8 @@ class MyDrawer extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  GestureDetector(
+                  InkWell(
+                    enableFeedback: true,
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
@@ -98,8 +117,8 @@ class MyDrawer extends ConsumerWidget {
                       ),
                     ),
                   ),
-
-                  GestureDetector(
+                  InkWell(
+                    enableFeedback: true,
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
@@ -119,9 +138,9 @@ class MyDrawer extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: (){
-
+                  InkWell(
+                    enableFeedback: true,
+                    onTap: () {
                       showCustomAboutDialog(context);
                     },
                     child: Padding(
@@ -143,14 +162,15 @@ class MyDrawer extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: .1,
+                height: .2,
                 width: ScreenSize.width(context) * .7,
-                color: Colors.grey.shade900,
+                color: Colors.grey.shade700,
               ),
             ],
           ),
-          GestureDetector(
-            onTap: (){
+          InkWell(
+            enableFeedback: true,
+            onTap: () {
               showHelpSupportDialog(context);
             },
             child: Padding(
@@ -168,8 +188,9 @@ class MyDrawer extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: (){
+                  InkWell(
+                    enableFeedback: true,
+                    onTap: () {
                       showPrivacyPolicy(context);
                     },
                     child: Padding(
@@ -178,7 +199,8 @@ class MyDrawer extends ConsumerWidget {
                         children: [
                           Icon(Icons.privacy_tip),
                           SizedBox(width: 30),
-                          Text('Privacy Policy', style: TextStyle(fontSize: 20)),
+                          Text('Privacy Policy',
+                              style: TextStyle(fontSize: 20)),
                         ],
                       ),
                     ),
@@ -187,8 +209,8 @@ class MyDrawer extends ConsumerWidget {
               ),
             ),
           ),
-
-          GestureDetector(
+          InkWell(
+            enableFeedback: true,
             onTap: () {
               showDialog(
                 context: context,
@@ -201,7 +223,9 @@ class MyDrawer extends ConsumerWidget {
                 height: 50,
                 width: ScreenSize.width(context) * .6,
                 decoration: BoxDecoration(
-                  color: isDarkModeOn?AppTheme.appBackgroundColor:AppTheme.buttonColors,
+                  color: isDarkModeOn
+                      ? AppTheme.appBackgroundColor
+                      : AppTheme.buttonColors,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey, width: 1),
                 ),
@@ -224,14 +248,18 @@ class MyDrawer extends ConsumerWidget {
             ),
           ),
           Spacer(),
-          Text('v1.0',style: TextStyle(
-            color: Colors.grey,
-          ),)
+          Text(
+            'v1.0',
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          )
         ],
       ),
     );
   }
 }
+
 void showCustomAboutDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -243,7 +271,8 @@ void showCustomAboutDialog(BuildContext context) {
           children: [
             const Icon(Icons.info_outline, color: Colors.green),
             const SizedBox(width: 10),
-            const Text("About CoinWatcher", style: TextStyle(color: Colors.white)),
+            const Text("About CoinWatcher",
+                style: TextStyle(color: Colors.white)),
           ],
         ),
         content: Column(
@@ -257,7 +286,7 @@ void showCustomAboutDialog(BuildContext context) {
             const SizedBox(height: 15),
             const Text(
               "A powerful crypto tracking app built with Flutter. "
-                  "Monitor 24h price changes and manage your portfolio with ease.",
+              "Monitor 24h price changes and manage your portfolio with ease.",
               style: TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 20),
@@ -281,6 +310,7 @@ void showCustomAboutDialog(BuildContext context) {
     },
   );
 }
+
 void showPrivacyPolicy(BuildContext context) {
   showDialog(
     context: context,
@@ -312,7 +342,10 @@ void showPrivacyPolicy(BuildContext context) {
                 const SizedBox(height: 10),
                 const Text(
                   "Last Updated: December 2025",
-                  style: TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic),
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic),
                 ),
               ],
             ),
@@ -321,7 +354,9 @@ void showPrivacyPolicy(BuildContext context) {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("I UNDERSTAND", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+            child: const Text("I UNDERSTAND",
+                style: TextStyle(
+                    color: Colors.green, fontWeight: FontWeight.bold)),
           ),
         ],
       );
@@ -338,12 +373,14 @@ Widget _policySection(String title, String body) {
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+              color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 4),
         Text(
           body,
-          style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+          style:
+              const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
         ),
       ],
     ),
@@ -363,7 +400,8 @@ void showHelpSupportDialog(BuildContext context) {
             SizedBox(width: 10),
             Text(
               "Help & Support",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -382,18 +420,20 @@ void showHelpSupportDialog(BuildContext context) {
             const SizedBox(height: 10),
             const Text(
               "CoinWatcher is a passion project built entirely by a solo developer. "
-                  "I am constantly working to improve the experience and add new features.",
-              style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+              "I am constantly working to improve the experience and add new features.",
+              style:
+                  TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
             ),
             const SizedBox(height: 20),
             const Text(
               "Collaboration & Support",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
               "I am open to support, feedback, and collaboration opportunities! "
-                  "If you'd like to contribute, report a bug, or just say hello, feel free to reach out:",
+              "If you'd like to contribute, report a bug, or just say hello, feel free to reach out:",
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
             const SizedBox(height: 15),
@@ -427,7 +467,8 @@ void showHelpSupportDialog(BuildContext context) {
             onPressed: () => Navigator.pop(context),
             child: const Text(
               "CLOSE",
-              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
             ),
           ),
         ],

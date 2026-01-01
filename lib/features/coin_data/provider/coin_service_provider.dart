@@ -7,11 +7,29 @@ final coinApiServiceProvider = Provider<CoinApiService>((ref) {
   return CoinApiService();
 });
 
+// StateNotifier for coin list
+class CoinListNotifier extends StateNotifier<AsyncValue<List<Coin>>> {
+  CoinListNotifier(this.coinApiService) : super(const AsyncValue.loading()) {
+    fetchCoins();
+  }
+
+  final CoinApiService coinApiService;
+
+  Future<void> fetchCoins() async {
+    state = const AsyncValue.loading();
+    try {
+      final coins = await coinApiService.fetchCoins();
+      state = AsyncValue.data(coins);
+    } catch (e, s) {
+      state = AsyncValue.error(e, s);
+    }
+  }
+}
 
 //provider for to display the list of coins from the API
-final coinListProvider = FutureProvider<List<Coin>>((ref) async {
+final coinListProvider = StateNotifierProvider<CoinListNotifier, AsyncValue<List<Coin>>>((ref) {
   final coinApiService = ref.watch(coinApiServiceProvider);
-  return coinApiService.fetchCoins();//the fetch coins function to get the coins
+  return CoinListNotifier(coinApiService);
 });
 
 //This state provider checks the texts in the textfield(initially an empty string)

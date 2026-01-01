@@ -53,6 +53,7 @@ class LocalNotificationService {
       'Scheduled Notifications',
       importance: Importance.max,
       priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
     );
 
     const DarwinNotificationDetails iosNotificationDetails = DarwinNotificationDetails();

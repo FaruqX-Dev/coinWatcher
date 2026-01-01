@@ -23,7 +23,7 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authController = ref.watch(authcontrollerProvider);
-
+    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -38,15 +38,21 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 43, 99, 48),
-                          borderRadius: BorderRadius.circular(150),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset('assets/images/cwatch_logo.png'),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                            borderRadius: BorderRadiusGeometry.circular(30),
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color.fromARGB(255, 43, 99, 48),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, top: 8, right: 11, bottom: 8),
+                                  child: Image.asset(
+                                      'assets/images/cwatch_logo.png'),
+                                ))),
                       ),
                     ],
                   ),
@@ -66,13 +72,20 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                   SizedBox(height: ScreenSize.height(context) * .01),
-                  Text('Enter your details to continue'),
+                  Text(
+                    'Enter your details to continue',
+                    style: TextStyle(
+                        color: isDarkModeOn ? Colors.white : Colors.white),
+                  ),
                   SizedBox(height: ScreenSize.height(context) * .05),
                   Row(
                     children: [
                       Text(
                         'Email',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: TextStyle(
+                            color: isDarkModeOn ? Colors.white : Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -80,6 +93,10 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
+                    cursorColor: isDarkModeOn ? Colors.white : Colors.white,
+                    style: TextStyle(
+                        color: isDarkModeOn ? Colors.white : Colors.white,
+                        fontSize: 18),
                     decoration: InputDecoration(
                       hintText: 'Enter your email',
                       hintStyle: TextStyle(color: Colors.grey),
@@ -103,7 +120,10 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       Text(
                         'Password',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: TextStyle(
+                            color: isDarkModeOn ? Colors.white : Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -111,8 +131,13 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   TextField(
                     controller: passwordController,
                     obscureText: _hidetext,
+                    style: TextStyle(
+                        color: isDarkModeOn ? Colors.white : Colors.white,
+                        fontSize: 18),
                     decoration: InputDecoration(
                       hintText: 'Enter your password',
+                      fillColor: isDarkModeOn ? Colors.white : Colors.white,
+                      focusColor: isDarkModeOn ? Colors.white : Colors.white,
                       hintStyle: TextStyle(color: Colors.grey),
                       enabled: true,
                       focusedBorder: OutlineInputBorder(
@@ -154,7 +179,8 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                         },
                         child: Text(
                           'Forgot password?',
-                          style: TextStyle(color: AppTheme.buttonColors),
+                          style: TextStyle(
+                              color: AppTheme.buttonColors, fontSize: 18),
                         ),
                       ),
                     ],
@@ -222,7 +248,13 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                         height: 1,
                         color: Colors.grey,
                       ),
-                      Text('OR'),
+                      Text(
+                        'OR',
+                        style: TextStyle(
+                            color: isDarkModeOn ? Colors.white : Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      ),
                       Container(
                         width: ScreenSize.width(context) * .4,
                         height: 1,
@@ -233,7 +265,23 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   SizedBox(height: 20),
                   InkWell(
                     enableFeedback: true,
-                    onTap: () {},
+                    onTap: () async {
+                    try {
+                      await authController.signInAsGuest();
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Signed in as guest')),
+                      );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CoinScreenList()),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Guest sign-in failed: $e')),
+                      );
+                    }
+                  },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -249,9 +297,13 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.g_mobiledata, size: 25),
+                              Icon(
+                                Icons.person,
+                                size: 25,
+                                color: Colors.white,
+                              ),
                               Text(
-                                'Continue with google',
+                                'Sign in as Guest',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 20,

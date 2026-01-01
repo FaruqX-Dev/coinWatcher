@@ -41,4 +41,13 @@ class FavoriteService {
         .map((snapshot) =>
         snapshot.docs.map((doc) => Coin.fromJson(doc.data())).toList());
   }
+
+  // Clear all favorites for a user
+  Future<void> clearAllFavorites(String userId) async {
+    final collectionRef = _db.collection('users').doc(userId).collection('favorites');
+    final querySnapshot = await collectionRef.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
 }
