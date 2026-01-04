@@ -5,6 +5,7 @@ import 'package:coin_watcher/features/auth/presentation/loginscreen.dart';
 import 'package:coin_watcher/features/auth/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widget/password_strength.dart';
 
@@ -191,7 +192,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                         : Colors.white)),
                             InkWell(
                               enableFeedback: true,
-                              onTap: () => showTermsAndConditions(context),
+                              onTap: () async {
+                                final url = Uri.parse('https://www.termsfeed.com/live/f3a59e67-b88d-4355-bd5b-971855aa6272');
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not launch URL')),
+                                  );
+                                }
+                              },
                               child: Text(
                                 'Terms & conditions',
                                 style: TextStyle(color: AppTheme.buttonColors),
@@ -240,9 +250,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         }
 
                         ScaffoldMessenger.of(context).showSnackBar(
-                           SnackBar(
+                          SnackBar(
                             content: Text('Registered Successfully!'),
-                            backgroundColor:Colors.green.shade400,
+                            backgroundColor: Colors.green.shade400,
                           ),
                         );
 
@@ -323,28 +333,14 @@ void showTermsAndConditions(BuildContext context) {
     context: context,
     builder: (context) => AlertDialog(
       title: const Text('Terms & Conditions'),
-      content: const Text(
-        'By using this app, you agree to our terms and conditions.',
+      content: Column(
+        children: [
+          const Text(
+              "By using this app, you agree to our terms and conditions.\n"),
+          Text(
+              "Privacy PolicyLast updated:January 02, 2026\nThis Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the Privacy Policy Generator.")
+        ],
       ),
-      // actions: [
-      //   InkWell(
-      //     onTap: () => Navigator.pop(context),
-      //     child: Container(decoration: BoxDecoration(
-      //       color: Colors.red,
-      //       borderRadius: BorderRadius.circular(12)
-      //     ),child: Padding(
-      //       padding: const EdgeInsets.all(8.0),
-      //       child: const Text('Decline',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-      //     )),
-      //   ),
-      //   InkWell(
-      //     onTap: () => Navigator.pop(context),
-      //     child: Padding(
-      //       padding: const EdgeInsets.all(8.0),
-      //       child: const Text('Accept',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold)),
-      //     ),
-      //   ),
-      // ],
     ),
   );
 }
