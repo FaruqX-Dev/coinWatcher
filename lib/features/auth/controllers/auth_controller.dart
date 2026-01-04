@@ -7,6 +7,9 @@ class AuthController {
 
 
   Future<User?> signIn(String email, String password)async{
+     if (_authService.currentUser?.isAnonymous == true) {
+      await _authService.signOut();
+    }
     return _authService.signIn(email, password);
   }
 

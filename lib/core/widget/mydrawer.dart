@@ -2,7 +2,6 @@ import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/utils/screensize.dart';
 import 'package:coin_watcher/features/settings/presentation/settings.dart';
 import 'package:coin_watcher/features/watchlist/presentation/watchlist_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +15,10 @@ class MyDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
+    final authState = ref.watch(currentUserProvider);
+    final user=authState.value;
+    final bool isUserLoggedIn = user != null && !user.isAnonymous;
+
     return Drawer(
       child: Column(
         children: [
@@ -26,33 +29,87 @@ class MyDrawer extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: [Image.asset('assets/images/panda.png', scale: 7)],
-                ),
-                SizedBox(height: 15),
-                Text(
-                  'User: ${ref.watch(currentUserProvider)?.email}',
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: isDarkModeOn ? Colors.white : Colors.black),
-                ),
-                Row(
-                  spacing: 5,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                        'e-mail Verified: ${ref.watch(currentUserProvider)?.emailVerified}'),
-                    if (ref.watch(currentUserProvider)?.emailVerified == true)
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      )
-                    else
-                      Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      )
+                    isUserLoggedIn
+                        ? Image.asset('assets/images/happy_panda.png', scale: 5)
+                        : Image.asset('assets/images/cry_panda.png', scale: 5)
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 1),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    isUserLoggedIn
+                        ? Text(
+                            '${ref.watch(currentUserProvider).value?.email}',
+                            style: TextStyle(
+                                fontSize: 17,
+                                color:
+                                    isDarkModeOn ? Colors.white : Colors.black),
+                          )
+                        : Text(
+                            'Guest',
+                            style: TextStyle(fontSize: 17),
+                          ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 5,
+                  children: [
+                    isUserLoggedIn
+                        ? Container(
+                            decoration: BoxDecoration(
+                                color: Colors.greenAccent.shade100,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Verified Account',
+                                    style: TextStyle(
+                                        color: isDarkModeOn
+                                            ? Colors.black
+                                            : Colors.black,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                                color: Colors.red.shade100,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Unverified Account',
+                                    style: TextStyle(
+                                        color: isDarkModeOn
+                                            ? Colors.black
+                                            : Colors.black,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Icon(
+                                    Icons.cancel,
+                                    color: Colors.red.shade800,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                  ],
+                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -67,7 +124,7 @@ class MyDrawer extends ConsumerWidget {
             ),
           ),
           SizedBox(
-            height: ScreenSize.height(context) * .35,
+            height: ScreenSize.height(context) * .38,
             child: Padding(
               padding: const EdgeInsets.all(25.0),
               child: Column(
@@ -89,9 +146,20 @@ class MyDrawer extends ConsumerWidget {
                       },
                       child: Row(
                         children: [
-                          Icon(Icons.dashboard),
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.blue.shade100,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(
+                                  Icons.dashboard,
+                                  color: Colors.blue.shade900,
+                                ),
+                              )),
                           SizedBox(width: 30),
-                          Text('DashBoard', style: TextStyle(fontSize: 20)),
+                          const Text('DashBoard',
+                              style: TextStyle(fontSize: 20)),
                         ],
                       ),
                     ),
@@ -110,9 +178,20 @@ class MyDrawer extends ConsumerWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(Icons.star),
-                          SizedBox(width: 30),
-                          Text('Watchlist', style: TextStyle(fontSize: 20)),
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.amber.shade100,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(
+                                  Icons.star,
+                                  color: Colors.amber.shade900,
+                                ),
+                              )),
+                          const SizedBox(width: 30),
+                          const Text('Watchlist',
+                              style: TextStyle(fontSize: 20)),
                         ],
                       ),
                     ),
@@ -131,7 +210,17 @@ class MyDrawer extends ConsumerWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(Icons.settings),
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.orange.shade100,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(
+                                  Icons.settings,
+                                  color: Colors.orange.shade900,
+                                ),
+                              )),
                           SizedBox(width: 30),
                           Text('Settings', style: TextStyle(fontSize: 20)),
                         ],
@@ -147,7 +236,17 @@ class MyDrawer extends ConsumerWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(Icons.library_books),
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.purple.shade100,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(
+                                  Icons.library_books,
+                                  color: Colors.purple.shade900,
+                                ),
+                              )),
                           SizedBox(width: 30),
                           Text('About', style: TextStyle(fontSize: 20)),
                         ],
@@ -182,7 +281,17 @@ class MyDrawer extends ConsumerWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        Icon(Icons.help),
+                        Container(
+                            decoration: BoxDecoration(
+                                color: Colors.green.shade100,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Icon(
+                                Icons.help,
+                                color: Colors.green.shade900,
+                              ),
+                            )),
                         SizedBox(width: 30),
                         Text('Help & Support', style: TextStyle(fontSize: 20)),
                       ],
@@ -197,7 +306,17 @@ class MyDrawer extends ConsumerWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(Icons.privacy_tip),
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.red.shade100,
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(
+                                  Icons.privacy_tip,
+                                  color: Colors.red.shade900,
+                                ),
+                              )),
                           SizedBox(width: 30),
                           Text('Privacy Policy',
                               style: TextStyle(fontSize: 20)),
@@ -224,24 +343,32 @@ class MyDrawer extends ConsumerWidget {
                 width: ScreenSize.width(context) * .6,
                 decoration: BoxDecoration(
                   color: isDarkModeOn
-                      ? AppTheme.appBackgroundColor
-                      : AppTheme.buttonColors,
+                      ?  Colors.white
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey, width: 1),
+                  border: Border.all(color: Colors.green.shade400, width: 3),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.logout),
+                    Icon(Icons.logout,color: isDarkModeOn?Colors.black:Colors.black,),
                     SizedBox(width: 5),
-                    Text(
-                      'Log Out',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    isUserLoggedIn
+                        ? Text(
+                            'Log Out',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: isDarkModeOn?Colors.black:Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : Text(
+                            'Return to Sign In',
+                            style: TextStyle(
+                              color: isDarkModeOn?Colors.black:Colors.black,
+                                fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
                   ],
                 ),
               ),

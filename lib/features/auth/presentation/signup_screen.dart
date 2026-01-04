@@ -3,7 +3,6 @@ import 'package:coin_watcher/core/utils/screensize.dart';
 import 'package:coin_watcher/core/widget/mydrawer.dart';
 import 'package:coin_watcher/features/auth/presentation/loginscreen.dart';
 import 'package:coin_watcher/features/auth/provider/auth_provider.dart';
-import 'package:coin_watcher/features/coin_data/presentation/coin_screen_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,7 +24,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authController = ref.watch(authcontrollerProvider);
+    final authController = ref.read(authcontrollerProvider);
     final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
 
     return SafeArea(
@@ -87,6 +86,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
+                    cursorColor: isDarkModeOn ? Colors.white : Colors.white,
+                    style: TextStyle(
+                        color: isDarkModeOn ? Colors.white : Colors.white),
                     decoration: InputDecoration(
                       enabled: true,
                       focusedBorder: OutlineInputBorder(
@@ -120,6 +122,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   SizedBox(height: 10),
                   TextField(
                     controller: passwordController,
+                    cursorColor: isDarkModeOn ? Colors.white : Colors.white,
+                    style: TextStyle(
+                        color: isDarkModeOn ? Colors.white : Colors.white),
                     onChanged: (value) {
                       setState(() {
                         _password = value;
@@ -165,12 +170,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Checkbox(
-                              hoverColor: Colors.white,
                               side: const BorderSide(
                                 color: Colors.green,
                                 width: 2.0,
                               ),
-                              checkColor: Colors.black,
+                              checkColor:
+                                  isDarkModeOn ? Colors.white : Colors.white,
                               value: _terms,
                               onChanged: (bool? checked) {
                                 setState(() {
@@ -213,31 +218,43 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   SizedBox(height: ScreenSize.height(context) * .28),
                   GestureDetector(
+                    // ... inside SignupScreen GestureDetector onTap ...
                     onTap: () async {
-                      try {
-                        await authController.signUp(
-                          emailController.text.trim(),
-                          passwordController.text.trim(),
-                        );
-
-                        if (!context.mounted) return;
-
+                      if (!_terms) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text('Logged in Successfully')),
+                              content: Text(
+                                  'Please accept the terms and conditions')),
                         );
+                        return;
+                      }
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const CoinScreenList()),
-                        );
+                      try {
+                        await ref.read(authcontrollerProvider).signUp(
+                              emailController.text.trim(),
+                              passwordController.text.trim(),
+                            );
 
-                        emailController.clear();
-                        passwordController.clear();
-                      } catch (e) {
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Sign in failed: $e')),
+                           SnackBar(
+                            content: Text('Registered Successfully!'),
+                            backgroundColor:Colors.green.shade400,
+                          ),
+                        );
+
+                        // This removes the Signup screen and lets AuthGate show the Dashboard
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Sign up failed: $e'),
+                              backgroundColor: Colors.red.shade400),
                         );
                       }
                     },

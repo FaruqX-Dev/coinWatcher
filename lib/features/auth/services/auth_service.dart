@@ -12,6 +12,7 @@ class AuthService {
 
   //Sign IN
   Future<User?> signIn(String email, String password) async {
+    
     final cred = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,

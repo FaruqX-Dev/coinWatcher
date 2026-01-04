@@ -47,7 +47,7 @@ class _CoinScreenListState extends ConsumerState<CoinScreenList> {
   @override
   Widget build(BuildContext context) {
     final isSearching = ref.watch(isSearchingProvider);
-    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
+    ref.watch(isThemeDarkModeProvider);
     final filteredCoins = ref.watch(filteredCoinListProvider);
 
     return Scaffold(

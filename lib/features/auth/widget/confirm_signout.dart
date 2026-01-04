@@ -8,7 +8,10 @@ class ConfirmSignout extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authController = ref.watch(authcontrollerProvider);
+    final authController = ref.read(authcontrollerProvider);
+    final authState = ref.watch(currentUserProvider);
+    final user=authState.value;
+    final bool isUserLoggedIn = user != null && !user.isAnonymous;
     return Center(
       child: GestureDetector(
         onTap: () {},
@@ -23,12 +26,23 @@ class ConfirmSignout extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Are you sure you want to sign out ?',style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),),
-              SizedBox(height: 20,),
+              isUserLoggedIn?
+              Text(
+                'Are you sure you want to sign out ?',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ):Text('Return to Login',
+               style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),),
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 spacing: 20,
                 mainAxisAlignment: MainAxisAlignment.center,

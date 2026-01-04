@@ -5,24 +5,24 @@ import 'package:coin_watcher/features/auth/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../coin_data/presentation/coin_screen_list.dart';
 import 'forgot_password.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _SignupScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignupScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   bool _hidetext = true;
+
   @override
   Widget build(BuildContext context) {
-    final authController = ref.watch(authcontrollerProvider);
+    final authController = ref.read(authcontrollerProvider);
     final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
     return SafeArea(
       child: Scaffold(
@@ -131,6 +131,7 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   TextField(
                     controller: passwordController,
                     obscureText: _hidetext,
+                    cursorColor: isDarkModeOn ? Colors.white : Colors.white,
                     style: TextStyle(
                         color: isDarkModeOn ? Colors.white : Colors.white,
                         fontSize: 18),
@@ -138,6 +139,7 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                       hintText: 'Enter your password',
                       fillColor: isDarkModeOn ? Colors.white : Colors.white,
                       focusColor: isDarkModeOn ? Colors.white : Colors.white,
+                      
                       hintStyle: TextStyle(color: Colors.grey),
                       enabled: true,
                       focusedBorder: OutlineInputBorder(
@@ -187,34 +189,24 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   ),
                   InkWell(
                     enableFeedback: true,
-                    onTap: () async {
-                      try {
-                        await authController.signIn(
-                          emailController.text.trim(),
-                          passwordController.text.trim(),
-                        );
+                     onTap: () async {
+                try {
+                  await authController.signIn(
+                    emailController.text.trim(),
+                    passwordController.text.trim(),
+                  );
 
-                        if (!context.mounted) return;
+                  if (!context.mounted) return;
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Logged in Successfully')),
-                        );
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const CoinScreenList()),
-                        );
-
-                        emailController.clear();
-                        passwordController.clear();
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Sign in failed: $e')),
-                        );
-                      }
-                    },
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Logged in successfully')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Login failed: $e')),
+                  );
+                }
+              },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -266,22 +258,20 @@ class _SignupScreenState extends ConsumerState<LoginScreen> {
                   InkWell(
                     enableFeedback: true,
                     onTap: () async {
-                    try {
-                      await authController.signInAsGuest();
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Signed in as guest')),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const CoinScreenList()),
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Guest sign-in failed: $e')),
-                      );
-                    }
-                  },
+                      try {
+                        await authController.signInAsGuest();
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Signed in as guest')),
+                        );
+                        // Navigate back to AuthGate
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Guest sign-in failed: $e')),
+                        );
+                      }
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(

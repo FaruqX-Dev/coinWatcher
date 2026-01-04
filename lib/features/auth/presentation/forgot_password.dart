@@ -63,13 +63,16 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
+        // ignore: no_leading_underscores_for_local_identifiers
         final _authController = ref.watch(authcontrollerProvider);
         final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: AppTheme.appBackgroundColor,
-              leading: BackButton(),
+              leading: BackButton(
+                color: Colors.white,
+              ),
             ),
             backgroundColor: AppTheme.appBackgroundColor,
             body: Column(

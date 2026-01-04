@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WelcomeScreen extends ConsumerWidget {
-  const WelcomeScreen({super.key});
-
+  final VoidCallback onGetStarted;
+  const WelcomeScreen({super.key, required this.onGetStarted});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
@@ -123,29 +123,11 @@ class WelcomeScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(
-                  height: ScreenSize.height(context) * .05,
+                  height: ScreenSize.height(context) * .02,
                 ),
                 InkWell(
                   enableFeedback: true,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        transitionDuration: const Duration(milliseconds: 300),
-                        pageBuilder: (_, __, ___) => const SignupScreen(),
-                        transitionsBuilder: (_, animation, __, child) {
-                          final tween = Tween<Offset>(
-                            begin: const Offset(1.0, 0.0), 
-                            end: Offset.zero,
-                          ).chain(CurveTween(curve: Curves.easeInOut));
-
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
-                  },
+                  onTap: () =>onGetStarted(),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
@@ -158,7 +140,7 @@ class WelcomeScreen extends ConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Create Account',
+                          'Get Started',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18,
@@ -170,38 +152,8 @@ class WelcomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
                
-                SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account? ',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Log in',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.buttonColors,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+               
               ],
             ),
           ),

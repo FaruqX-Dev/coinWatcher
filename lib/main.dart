@@ -1,4 +1,5 @@
 import 'package:coin_watcher/core/themes/theme.dart';
+import 'package:coin_watcher/features/auth/services/app_root.dart';
 import 'package:coin_watcher/features/auth/services/auth_gate.dart';
 import 'package:coin_watcher/features/notifications/services/local_notification.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,11 +19,12 @@ class MyApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Coin Watcher',
       theme: ref.watch(themeNotifierProvider),
-      home: AuthGate(),
+      home: const AppRoot(),
     );
   }
 }

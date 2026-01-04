@@ -16,7 +16,7 @@ class CoinDetailsContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = ref.watch(currentUserProvider)?.uid;
+    final userId = ref.watch(currentUserProvider).value?.uid;
     final favoriteIds =
         ref.watch(favoriteIdsProvider(userId ?? "")).value ?? [];
     final isFavorite = favoriteIds.contains(coin.id);

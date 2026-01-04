@@ -12,7 +12,7 @@ class FavoritesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = ref.watch(currentUserProvider)?.uid ?? "";
+    final userId = ref.watch(currentUserProvider).value?.uid ?? "";
     final favoriteCoinsAsync = ref.watch(favoriteCoinsProvider(userId));
     final favoriteService = ref.read(favoriteServiceProvider);
 
