@@ -1,3 +1,4 @@
+
 import 'dart:math';
 
 import 'package:coin_watcher/features/coin_data/model/coin_model.dart';
@@ -115,7 +116,7 @@ class CoinDetailsContainer extends ConsumerWidget {
                           await notificationService.cancelNotification(coin.id.hashCode);
                           await notificationService.cancelNotification(coin.id.hashCode + 1);
                         }
-                      } else {
+                      } else{
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Please log in to save favorites'),

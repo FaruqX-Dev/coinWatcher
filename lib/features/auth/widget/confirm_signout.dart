@@ -52,9 +52,20 @@ class ConfirmSignout extends ConsumerWidget {
                       backgroundColor: Colors.red,
                     ),
                     onPressed: () async {
-                      await authController.signOut();
-                      Navigator.pop(context);
-                    },
+  try {
+    // Trigger sign out
+    await authController.signOut();
+    ref.invalidate(authStateProvider);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Signed Out successfully')),
+    );
+    if (context.mounted) {
+      Navigator.of(context).pop(); 
+    }
+  } catch (e) {
+    debugPrint('Error: $e');
+  }
+},
                     child: Text('Yes'),
                   ),
                   TextButton(

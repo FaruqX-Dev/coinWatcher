@@ -41,18 +41,7 @@ class SettingsScreen extends ConsumerWidget {
                   },
                 ),
               ),
-              ListTile(
-                title: Text('Share'),
-                trailing: Icon(Icons.arrow_forward_ios),
-                
-              ),
-              ListTile(
-                title: Text('Rate Us'),
-                trailing: Icon(Icons.arrow_forward_ios),
-        
-                
-              ),
-
+             
             ],
           ),
         ),

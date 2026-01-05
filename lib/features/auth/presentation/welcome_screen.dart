@@ -1,13 +1,11 @@
 import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/utils/screensize.dart';
-import 'package:coin_watcher/features/auth/presentation/loginscreen.dart';
-import 'package:coin_watcher/features/auth/presentation/signup_screen.dart';
+import 'package:coin_watcher/features/auth/services/auth_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WelcomeScreen extends ConsumerWidget {
-  final VoidCallback onGetStarted;
-  const WelcomeScreen({super.key, required this.onGetStarted});
+  const WelcomeScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
@@ -125,33 +123,58 @@ class WelcomeScreen extends ConsumerWidget {
                 SizedBox(
                   height: ScreenSize.height(context) * .02,
                 ),
-                InkWell(
-                  enableFeedback: true,
-                  onTap: () =>onGetStarted(),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: ScreenSize.width(context) * .9,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppTheme.buttonColors,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Get Started',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: AppTheme.constantTextColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                // InkWell(
+                //   enableFeedback: true,
+                //   onTap: () =>onGetStarted(),
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child: Container(
+                //       width: ScreenSize.width(context) * .9,
+                //       height: 40,
+                //       decoration: BoxDecoration(
+                //         color: AppTheme.buttonColors,
+                //         borderRadius: BorderRadius.circular(10),
+                //       ),
+                //       child: Padding(
+                //         padding: const EdgeInsets.all(8.0),
+                //         child: Text(
+                //           'Get Started',
+                //           textAlign: TextAlign.center,
+                //           style: TextStyle(
+                //             fontSize: 18,
+                //             color: AppTheme.constantTextColor,
+                //             fontWeight: FontWeight.bold,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                Container(
+                  width:ScreenSize.width(context) * .9,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10)
+                    
                   ),
-                ),
+                  child: ElevatedButton(
+                    
+                    onPressed:()=> Navigator.pushReplacement(context,MaterialPageRoute(builder: 
+                    (context)=>AuthGate())),
+                    style:ElevatedButton.styleFrom(
+                      elevation: 2.0,
+                      backgroundColor: AppTheme.buttonColors,
+                      foregroundColor: Colors.black,
+                     
+                      alignment: Alignment.center,
+                      
+                    ) ,
+                    child:Text('Get Started',style: TextStyle(
+                           fontSize: 18,
+                          color: AppTheme.constantTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),) ,
+                  ),
+                )
                
                
               ],

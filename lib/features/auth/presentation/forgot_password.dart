@@ -95,8 +95,8 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                         SizedBox(height: 20),
                         Text(
                           style: TextStyle(
-                            color: isDarkModeOn ? Colors.white : Colors.white
-                          ),
+                              color:
+                                  isDarkModeOn ? Colors.white : Colors.white),
                           textAlign: TextAlign.center,
                           "Don't worry, it happens. Enter the email address \nlinked to your account to reset the \npassword.",
                         ),
@@ -120,55 +120,71 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: TextField(
-                    controller: emailController,
-                    style: TextStyle(
-                      color: isDarkModeOn ? Colors.white : Colors.white
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: TextField(
+                        controller: emailController,
+                        style: TextStyle(
+                            color: isDarkModeOn ? Colors.white : Colors.white),
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'name@example.com',
+                          enabled: true,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.yellow),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          hintStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          prefixIcon: Icon(Icons.mail, color: Colors.grey),
+                        ),
+                      ),
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: 'name@example.com',
-                      enabled: true,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.yellow),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      prefixIcon: Icon(Icons.mail, color: Colors.grey),
-                    ),
-                  ),
+                    SizedBox(height: 10,),
+                    Text(
+                      textAlign: TextAlign.center,
+                      'Cant find mail? Try checking your spam or junk folder',
+                      style: TextStyle(fontSize: 15),
+                    )
+                  ],
                 ),
                 Spacer(),
                 InkWell(
                   enableFeedback: _isButtonEnabled,
-                  onTap: _isButtonEnabled ? () async {
-                    await _authController.resetPassword(
-                      emailController.text.trim(),
-                    );
-                    _startCooldown();
-                  } : null,
+                  onTap: _isButtonEnabled
+                      ? () async {
+                          await _authController.resetPassword(
+                            emailController.text.trim(),
+                          );
+                          emailController.clear();
+                          _startCooldown();
+                        }
+                      : null,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       width: ScreenSize.width(context) * .9,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: _isButtonEnabled ? AppTheme.buttonColors : Colors.grey,
+                        color: _isButtonEnabled
+                            ? AppTheme.buttonColors
+                            : Colors.grey,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          _isCooldownActive ? 'Resend in ${_cooldownSeconds}s' : 'Send Reset Link',
+                          _isCooldownActive
+                              ? 'Resend in ${_cooldownSeconds}s'
+                              : 'Send Reset Link',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18,
@@ -186,10 +202,9 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Remember your password ?', style:
-                        TextStyle(
-                          color: Colors.grey
-                        ),
+                      Text(
+                        'Remember your password ?',
+                        style: TextStyle(color: Colors.grey),
                       ),
                       SizedBox(width: 5),
                       GestureDetector(

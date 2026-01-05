@@ -23,7 +23,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authController = ref.read(authcontrollerProvider);
+    ref.read(authcontrollerProvider);
     final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
 
     return SafeArea(

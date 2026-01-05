@@ -1,3 +1,4 @@
+import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/widget/mydrawer.dart';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class FavoritesScreen extends ConsumerWidget {
     final userId = ref.watch(currentUserProvider).value?.uid ?? "";
     final favoriteCoinsAsync = ref.watch(favoriteCoinsProvider(userId));
     final favoriteService = ref.read(favoriteServiceProvider);
+    final isDarkModeOn  =ref.watch(isThemeDarkModeProvider);
 
 
     return Scaffold(
@@ -31,8 +33,12 @@ class FavoritesScreen extends ConsumerWidget {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     backgroundColor: Colors.grey.shade900,
-                    title: const Text('Confirm Clear'),
-                    content: const Text('Are you sure you want to clear all items from your watchlist?'),
+                    title: Text('Confirm Clear',style: TextStyle(
+                      color: isDarkModeOn?Colors.white:Colors.white
+                    ),),
+                    content: Text('Are you sure you want to clear all items from your watchlist?',style: TextStyle(
+                      color: isDarkModeOn?Colors.white:Colors.white
+                    ),),
                     actions: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
