@@ -1,5 +1,6 @@
 import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/utils/screensize.dart';
+import 'package:coin_watcher/features/navigation/providers/navigation_provider.dart';
 import 'package:coin_watcher/features/settings/presentation/settings.dart';
 import 'package:coin_watcher/features/watchlist/presentation/watchlist_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class MyDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
     final authState = ref.watch(currentUserProvider);
-    final user=authState.value;
+    final user = authState.value;
     final bool isUserLoggedIn = user != null && !user.isAnonymous;
 
     return Drawer(
@@ -137,12 +138,8 @@ class MyDrawer extends ConsumerWidget {
                     child: InkWell(
                       enableFeedback: true,
                       onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CoinScreenList(),
-                          ),
-                        );
+                         ref.read(navigationProvider.notifier).state = 0;
+                      Navigator.pop(context);
                       },
                       child: Row(
                         children: [
@@ -167,12 +164,8 @@ class MyDrawer extends ConsumerWidget {
                   InkWell(
                     enableFeedback: true,
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FavoritesScreen(),
-                        ),
-                      );
+                      ref.read(navigationProvider.notifier).state = 1;
+                      Navigator.pop(context);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -199,12 +192,8 @@ class MyDrawer extends ConsumerWidget {
                   InkWell(
                     enableFeedback: true,
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SettingsScreen(),
-                        ),
-                      );
+                      ref.read(navigationProvider.notifier).state = 2;
+                      Navigator.pop(context);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -342,23 +331,24 @@ class MyDrawer extends ConsumerWidget {
                 height: 50,
                 width: ScreenSize.width(context) * .6,
                 decoration: BoxDecoration(
-                  color: isDarkModeOn
-                      ?  Colors.white
-                      : Colors.white,
+                  color: isDarkModeOn ? Colors.white : Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.green.shade400, width: 3),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.logout,color: isDarkModeOn?Colors.black:Colors.black,),
+                    Icon(
+                      Icons.logout,
+                      color: isDarkModeOn ? Colors.black : Colors.black,
+                    ),
                     SizedBox(width: 5),
                     isUserLoggedIn
                         ? Text(
                             'Log Out',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: isDarkModeOn?Colors.black:Colors.black,
+                              color: isDarkModeOn ? Colors.black : Colors.black,
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                             ),
@@ -366,8 +356,10 @@ class MyDrawer extends ConsumerWidget {
                         : Text(
                             'Return to Sign In',
                             style: TextStyle(
-                              color: isDarkModeOn?Colors.black:Colors.black,
-                                fontSize: 15, fontWeight: FontWeight.w500),
+                                color:
+                                    isDarkModeOn ? Colors.black : Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500),
                           ),
                   ],
                 ),

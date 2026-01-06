@@ -55,12 +55,15 @@ class ConfirmSignout extends ConsumerWidget {
   try {
     // Trigger sign out
     await authController.signOut();
-    ref.invalidate(authStateProvider);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Signed Out successfully')),
-    );
+   ref.invalidate(authStateProvider);
+    
     if (context.mounted) {
-      Navigator.of(context).pop(); 
+      // removes all screens and goes back to the very first route (AuthGate)
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Signed Out successfully')),
+      );
     }
   } catch (e) {
     debugPrint('Error: $e');
