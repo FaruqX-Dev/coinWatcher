@@ -22,7 +22,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(currentUserProvider);
     final user=authState.value;
-    final bool isUserLoggedIn = user != null && !user.isAnonymous;
+    final bool isUserLoggedIn = user != null;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Coin Watcher',

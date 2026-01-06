@@ -122,7 +122,7 @@ class FavoritesScreen extends ConsumerWidget {
               child: CoinTile(coin: coins[index])),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text("Error: $e")),
+        error: (e, _) => Center(child: Text("Error: Failed to add ")),
       ),
     );
   }

@@ -24,6 +24,19 @@ final currentUserProvider = StreamProvider<User?>((ref) {
   return authService.authStatechanges(); // Use the stream!
 });
 
+//
+final authenticatedUserProvider = Provider<User?>((ref) {
+  final authAsync = ref.watch(currentUserProvider);
+
+  return authAsync.when(
+    data: (user) {
+      if (user == null || user.isAnonymous) return null;
+      return user;
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
 //provides the authstatecontroller(for auth actions)
 final authcontrollerProvider= Provider<AuthController>((ref){
 final authService = ref.watch(authServiceProvider);

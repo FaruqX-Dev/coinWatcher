@@ -32,24 +32,25 @@ class _CoinScreenListState extends ConsumerState<CoinScreenList> {
     _scrollController.addListener(_scrollListener);
   }
 
+  void _scrollListener() {
+    final atTop = _scrollController.offset <= 0;
+    if (atTop != _isAtTop) {
+      setState(() => _isAtTop = atTop);
+    }
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollListener() {
-    setState(() {
-      _isAtTop = _scrollController.offset <= 0;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final isSearching = ref.watch(isSearchingProvider);
-    ref.watch(isThemeDarkModeProvider);
+    final coinsAsync = ref.watch(coinListProvider);
     final filteredCoins = ref.watch(filteredCoinListProvider);
-
+    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -67,14 +68,11 @@ class _CoinScreenListState extends ConsumerState<CoinScreenList> {
             : const Text('CoinWatcher'),
         actions: [
           IconButton(
-            icon: isSearching
-                ? const Icon(Icons.close)
-                : const Icon(Icons.search),
+            icon: Icon(isSearching ? Icons.close : Icons.search),
             onPressed: () {
               final notifier = ref.read(isSearchingProvider.notifier);
               notifier.state = !notifier.state;
 
-              // Reset search query when search is closed
               if (!notifier.state) {
                 ref.read(searchQueryProvider.notifier).state = "";
               }
@@ -82,52 +80,117 @@ class _CoinScreenListState extends ConsumerState<CoinScreenList> {
           ),
         ],
       ),
-      drawer: MyDrawer(),
-
-      // Filtered list updates as you type
-      body: filteredCoins.isEmpty
-          ? const Center(child: CircularProgressIndicator(color: Colors.white,))
-          : Column(
+      drawer: const MyDrawer(),
+      body: coinsAsync.when(
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (e, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                if (_isAtTop)
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(
+                const Icon(
+                  Icons.wifi_off,
+                  size: 48,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Network error',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Please check your internet connection and try again.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                InkWell(
+                  onTap: () => ref.read(coinListProvider.notifier).fetchCoins(),
+        
+                  child: Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.grey.shade800),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 5,
                         children: [
+                          Icon(Icons.refresh),
                           Text(
-                            'Pull down to refresh',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          Icon(Icons.arrow_downward,size: 12.0,)
+                            'Refresh',
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          )
                         ],
                       ),
                     ),
                   ),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _refreshCoinList,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: filteredCoins.length,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) =>
-                                  CoinDetailsContainer(coin: filteredCoins[index]),
-                            );
-                          },
-                          child: CoinTile(coin: filteredCoins[index]),
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                )
               ],
             ),
+          ),
+        ),
+        data: (_) {
+          if (filteredCoins.isEmpty) {
+            return const Center(
+              child: Text(
+                'No coins found',
+                style: TextStyle(color: Colors.grey),
+              ),
+            );
+          }
+
+          return Column(
+            children: [
+              if (_isAtTop)
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Pull down to refresh',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(Icons.arrow_downward, size: 12),
+                    ],
+                  ),
+                ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _refreshCoinList,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: filteredCoins.length,
+                    itemBuilder: (context, index) {
+                      final coin = filteredCoins[index];
+                      return InkWell(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => CoinDetailsContainer(coin: coin),
+                          );
+                        },
+                        child: CoinTile(coin: coin),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

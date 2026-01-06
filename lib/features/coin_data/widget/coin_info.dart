@@ -1,6 +1,6 @@
-
 import 'dart:math';
 
+import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/features/coin_data/model/coin_model.dart';
 import 'package:coin_watcher/features/notifications/services/local_notification.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,9 @@ class CoinDetailsContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = ref.watch(currentUserProvider).value?.uid;
+    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
+    final user = ref.watch(authenticatedUserProvider);
+    final userId = user?.uid;
     final favoriteIds =
         ref.watch(favoriteIdsProvider(userId ?? "")).value ?? [];
     final isFavorite = favoriteIds.contains(coin.id);
@@ -58,76 +60,102 @@ class CoinDetailsContainer extends ConsumerWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 15),
-
               Row(
                 children: [
                   Text(
                     "Symbol: ${coin.symbol.toUpperCase()}",
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(
+                        color: isDarkModeOn ? Colors.white : Colors.white,
+                        fontSize: 18),
                   ),
                   Spacer(),
                   GestureDetector(
                     onTap: () async {
-                      if (userId != null) {
-                        await ref
-                            .read(favoriteServiceProvider)
-                            .toggleFavorite(userId, coin);
-                        if (!isFavorite) { // Only schedule if adding to watchlist
-                          final notificationService = LocalNotificationService();
-                          await notificationService.requestPermissionIfNeeded();
-                          final change = coin.priceChangePercentage24h;
-                          final direction = change >= 0 ? 'increased' : 'decreased';
-                          final now = DateTime.now();
-                          final random = Random();
-
-                          // Schedule morning notification (random between 8 AM and 12 PM)
-                          int morningHour = 8 + random.nextInt(4); // 8 to 11
-                          int morningMinute = random.nextInt(60);
-                          DateTime morningTime = DateTime(now.year, now.month, now.day, morningHour, morningMinute);
-                          if (morningTime.isBefore(now) || morningTime.isAtSameMomentAs(now)) {
-                            morningTime = morningTime.add(const Duration(days: 1));
-                          }
-                          await notificationService.scheduleNotification(
-                            id: coin.id.hashCode, // Unique ID for morning
-                            title: '${coin.name} Update',
-                            body: '${coin.name} has $direction by ${change.abs().toStringAsFixed(2)}% in the last 24 hours. Current price: \$${coin.currentPrice}',
-                            scheduledDate: morningTime,
-                            matchDateTimeComponents: DateTimeComponents.time,
-                          );
-
-                          // Schedule evening notification (random between 6 PM and 10 PM)
-                          int eveningHour = 18 + random.nextInt(4); // 18 to 21
-                          int eveningMinute = random.nextInt(60);
-                          DateTime eveningTime = DateTime(now.year, now.month, now.day, eveningHour, eveningMinute);
-                          if (eveningTime.isBefore(now) || eveningTime.isAtSameMomentAs(now)) {
-                            eveningTime = eveningTime.add(const Duration(days: 1));
-                          }
-                          await notificationService.scheduleNotification(
-                            id: coin.id.hashCode + 1, // Unique ID for evening
-                            title: '${coin.name} Update',
-                            body: '${coin.name} has $direction by ${change.abs().toStringAsFixed(2)}% in the last 24 hours. Current price: \$${coin.currentPrice}',
-                            scheduledDate: eveningTime,
-                            matchDateTimeComponents: DateTimeComponents.time,
-                          );
-                        } else { // Cancel notifications if removing from watchlist
-                          final notificationService = LocalNotificationService();
-                          await notificationService.cancelNotification(coin.id.hashCode);
-                          await notificationService.cancelNotification(coin.id.hashCode + 1);
-                        }
-                      } else{
+                      //anonymous or null users cannot add to favourites(Must sign in)
+                      if (userId == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Please log in to save favorites'),
+                            content: Text(
+                              'Please log in to add coins to your watchlist',
+                              style: TextStyle(fontSize: 18),
+                            ),
                           ),
                         );
+                        return;
                       }
+
+                      final favoriteService = ref.read(favoriteServiceProvider);
+                      final notificationService = LocalNotificationService();
+
+                      await favoriteService.toggleFavorite(userId, coin);
+
+                      // If removing from watchlist cancel notifications for coin update
+                      if (isFavorite) {
+                        await notificationService
+                            .cancelNotification(coin.id.hashCode);
+                        await notificationService
+                            .cancelNotification(coin.id.hashCode + 1);
+                        return;
+                      }
+
+                      // If adding to watchlist schedule morning and evening notifications
+                      await notificationService.requestPermissionIfNeeded();
+
+                      final change = coin.priceChangePercentage24h;
+                      final direction = change >= 0 ? 'increased' : 'decreased';
+                      final now = DateTime.now();
+                      final random = Random();
+
+                      // Morning notification between 8 AM – 11:59 AM
+                      DateTime morningTime = DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        8 + random.nextInt(4),
+                        random.nextInt(60),
+                      );
+                      if (!morningTime.isAfter(now)) {
+                        morningTime = morningTime.add(const Duration(days: 1));
+                      }
+
+                      await notificationService.scheduleNotification(
+                        id: coin.id.hashCode,
+                        title: '${coin.name} Update',
+                        body:
+                            '${coin.name} has $direction by ${change.abs().toStringAsFixed(2)}% '
+                            'in the last 24 hours. Current price: \$${coin.currentPrice}',
+                        scheduledDate: morningTime,
+                        matchDateTimeComponents: DateTimeComponents.time,
+                      );
+
+                      //Evening notification between 6 PM – 9:59 PM
+                      DateTime eveningTime = DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        18 + random.nextInt(4),
+                        random.nextInt(60),
+                      );
+                      if (!eveningTime.isAfter(now)) {
+                        eveningTime = eveningTime.add(const Duration(days: 1));
+                      }
+
+                      await notificationService.scheduleNotification(
+                        id: coin.id.hashCode + 1,
+                        title: '${coin.name} Update',
+                        body:
+                            '${coin.name} has $direction by ${change.abs().toStringAsFixed(2)}% '
+                            'in the last 24 hours. Current price: \$${coin.currentPrice}',
+                        scheduledDate: eveningTime,
+                        matchDateTimeComponents: DateTimeComponents.time,
+                      );
                     },
                     child: Container(
                       height: 40,
                       decoration: BoxDecoration(
-                        color: isFavorite ? Colors.amber.shade800 : Colors.green,
+                        color:
+                            isFavorite ? Colors.amber.shade800 : Colors.green,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
@@ -147,28 +175,22 @@ class CoinDetailsContainer extends ConsumerWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 12),
-
               Text(
                 "Current Price: \$${coin.currentPrice}",
                 style: const TextStyle(color: Colors.white, fontSize: 15),
               ),
-
               const SizedBox(height: 10),
-
               Text(
                 "MarketCap Rank: ${coin.marketCapRank}",
                 style: const TextStyle(color: Colors.white, fontSize: 15),
               ),
               const SizedBox(height: 12),
-
               Text(
                 "MarketCap: \$${coin.marketCap}",
                 style: const TextStyle(color: Colors.white, fontSize: 15),
               ),
               const SizedBox(height: 12),
-
               Text(
                 "Total Volume: \$${coin.totalVolume}",
                 style: const TextStyle(color: Colors.white, fontSize: 15),
