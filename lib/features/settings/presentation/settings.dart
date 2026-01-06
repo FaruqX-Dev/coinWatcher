@@ -41,7 +41,7 @@ class SettingsScreen extends ConsumerWidget {
                   },
                 ),
               ),
-             
+             //Every other settings feature will be added later on
             ],
           ),
         ),
