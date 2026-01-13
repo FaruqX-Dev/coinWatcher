@@ -1,6 +1,5 @@
 import 'package:coin_watcher/features/auth/presentation/loginscreen.dart';
 import 'package:coin_watcher/features/auth/provider/auth_provider.dart';
-import 'package:coin_watcher/features/coin_data/presentation/coin_screen_list.dart';
 import 'package:coin_watcher/features/navigation/controllers/mainshell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

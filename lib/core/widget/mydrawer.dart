@@ -1,14 +1,11 @@
 import 'package:coin_watcher/core/themes/theme.dart';
 import 'package:coin_watcher/core/utils/screensize.dart';
 import 'package:coin_watcher/features/navigation/providers/navigation_provider.dart';
-import 'package:coin_watcher/features/settings/presentation/settings.dart';
-import 'package:coin_watcher/features/watchlist/presentation/watchlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/provider/auth_provider.dart';
 import '../../features/auth/widget/confirm_signout.dart';
-import '../../features/coin_data/presentation/coin_screen_list.dart';
 
 class MyDrawer extends ConsumerWidget {
   const MyDrawer({super.key});

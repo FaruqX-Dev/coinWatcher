@@ -47,10 +47,11 @@ class _CoinScreenListState extends ConsumerState<CoinScreenList> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkModeOn=ref.watch(isThemeDarkModeProvider);
     final isSearching = ref.watch(isSearchingProvider);
     final coinsAsync = ref.watch(coinListProvider);
     final filteredCoins = ref.watch(filteredCoinListProvider);
-    final isDarkModeOn = ref.watch(isThemeDarkModeProvider);
+    ref.watch(isThemeDarkModeProvider);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -125,7 +126,7 @@ class _CoinScreenListState extends ConsumerState<CoinScreenList> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 5,
                         children: [
-                          Icon(Icons.refresh),
+                          Icon(Icons.refresh,color: isDarkModeOn?Colors.white:Colors.white,),
                           Text(
                             'Refresh',
                             style: TextStyle(color: Colors.white, fontSize: 20),
